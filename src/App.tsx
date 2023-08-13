@@ -1,34 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+import PhotoList from './components/PhotoList';
+import Photo from './components/Photo';
+
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [photoList, setPhotoList] = useState<Photo[]>(() => {
+    const saved = localStorage.getItem('photos');
+    if (saved === null) {
+      console.log('not cached');
+      return true;
+    } else {
+      console.log('cached');
+      return JSON.parse(saved);
+    }
+  });
+  const [loading, setLoading] = useState(localStorage.getItem('photos') === null);
+
+  useEffect(() => {
+    if (loading) {
+      axios.get('https://jsonplaceholder.typicode.com/album/1/photos').then((response) => {
+        setPhotoList(response.data);
+        setLoading(false);
+        localStorage.setItem('photos', JSON.stringify(response.data));
+      }).catch((reason) => console.log(reason));
+    }
+  }, [loading]);
+
+  function randomize(a: Array<Photo>, currentIndex: number): Array<Photo> {
+      if (currentIndex === 0) {
+        return a;
+      } else {
+        let randomIndex = Math.floor(Math.random()*currentIndex);
+        [a[currentIndex], a[randomIndex]] = [a[randomIndex], a[currentIndex]];
+        currentIndex--;
+        return randomize(a, currentIndex);
+      }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Container>
+      <Stack spacing={1} alignItems={'center'}>
+        <h1>Photo List</h1>
+        {loading ? (
+          <CircularProgress/>
+        ) : (
+          <PhotoList {...photoList}/>
+        )}
+        <Button 
+          variant="contained" 
+          onClick={() => {
+            let randomizedArray: Array<Photo> = randomize(photoList.slice(), photoList.length-1);
+            setPhotoList(randomizedArray);
+            localStorage.setItem('photos', JSON.stringify(randomizedArray));
+          }}
+        >
+          Randomize
+        </Button>
+      </Stack>
+    </Container>
   )
 }
 
