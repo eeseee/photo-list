@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     if (loading) {
-      axios.get('https://jsonplaceholder.typicode.com/album/1/photos').then((response) => {
+      axios.get('https://jsonplaceholder.typicode.com/photos').then((response) => {
         setPhotoList(response.data);
         setLoading(false);
         localStorage.setItem('photos', JSON.stringify(response.data));
@@ -32,15 +32,16 @@ function App() {
     }
   }, [loading]);
 
-  function randomize(a: Array<Photo>, currentIndex: number): Array<Photo> {
-      if (currentIndex === 0) {
-        return a;
-      } else {
-        let randomIndex = Math.floor(Math.random()*currentIndex);
-        [a[currentIndex], a[randomIndex]] = [a[randomIndex], a[currentIndex]];
-        currentIndex--;
-        return randomize(a, currentIndex);
-      }
+  function randomize(a: Array<Photo>): Array<Photo> {
+    let result: Array<Photo> = [];
+    if (!a.length) {
+      return result;
+    } else {
+      let randomIndex = Math.floor(Math.random()*a.length);
+      result.push(a[randomIndex]);
+      let slicedArray = a.slice(0, randomIndex).concat(a.slice(randomIndex+1));
+      return result.concat(randomize(slicedArray));
+    }
   }
 
   return (
@@ -54,9 +55,8 @@ function App() {
         )}
         <Button 
           variant="contained" 
-          size="large"
           onClick={() => {
-            let randomizedArray: Array<Photo> = randomize(photoList.slice(), photoList.length-1);
+            let randomizedArray: Array<Photo> = randomize(photoList);
             setPhotoList(randomizedArray);
             localStorage.setItem('photos', JSON.stringify(randomizedArray));
           }}
