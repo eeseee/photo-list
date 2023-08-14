@@ -14,7 +14,7 @@ function App() {
     const saved = localStorage.getItem('photos');
     if (saved === null) {
       console.log('not cached');
-      return true;
+      return [];
     } else {
       console.log('cached');
       return JSON.parse(saved);
@@ -54,6 +54,7 @@ function App() {
         )}
         <Button 
           variant="contained" 
+          size="large"
           onClick={() => {
             let randomizedArray: Array<Photo> = randomize(photoList.slice(), photoList.length-1);
             setPhotoList(randomizedArray);

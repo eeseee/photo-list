@@ -13,7 +13,7 @@ const Photo = (photo: Photo) => {
                 component='img'
                 alt={photo.title}
                 src={photo.url}
-                sx={{ border: 'solid', borderRadius: '30px', boxShadow: '5px 5px'}}
+                sx={{ border: 'solid', borderRadius: '30px', boxShadow: '5px 5px 5px'}}
             />
             <h1 style={{ position: 'absolute', transform: `rotate(${45}deg)`, fontSize: '25px', top: '275px', left: '100px' }}>
                 {photo.title}

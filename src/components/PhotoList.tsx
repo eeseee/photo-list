@@ -8,8 +8,8 @@ const PhotoList = (data: any) => {
     let photoList: Array<Photo> = Object.values(data);
 
     return (
-        <Container sx={{height: '100%', width: '100%'}}>  
-            <ImageList sx={{ display: 'flex', flexDirection:'row' }}>
+        <Container>  
+            <ImageList sx={{ display: 'flex', flexDirection:'row', borderRadius: '30px' }}>
                 {photoList.map((photo: Photo) => (
                     <ImageListItem key={photo.id} sx={{padding:'1em'}}>
                         <Photo {...photo}/>
